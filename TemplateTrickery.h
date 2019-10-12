@@ -88,3 +88,22 @@ constexpr auto is_valid(T f) {
       return isValid_Impl<T, void, decltype(args) && ...>::value;
    };
 }
+
+//Checks if type T is any of the types provided as ARGS...
+//I could have done this using a much simpler function template but I wanted the interface to be similar to stl type traits
+namespace TRAIT_TYPE_HELPERS
+{
+	template <typename T, typename = void, typename ... ARGS>
+	struct is_one_of_helper : std::false_type {};
+
+	template <typename T, typename ... ARGS>
+	struct is_one_of_helper <T, std::enable_if_t<(std::is_same_v<T, ARGS> || ...)>, ARGS...> : std::true_type {};
+}
+
+//Main type trait
+template <typename T, typename ... ARGS>
+using is_one_of = TRAIT_TYPE_HELPERS::is_one_of_helper<T, void, ARGS...>;
+
+//convenience template
+template <typename T, typename ... ARGS>
+constexpr bool is_one_of_v = is_one_of<T, ARGS...>::value;
