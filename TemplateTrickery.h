@@ -107,3 +107,13 @@ using is_one_of = TRAIT_TYPE_HELPERS::is_one_of_helper<T, void, ARGS...>;
 //convenience template
 template <typename T, typename ... ARGS>
 constexpr bool is_one_of_v = is_one_of<T, ARGS...>::value;
+
+//Creates a copy of RuleToCopy by casting to a particular derived type first, not safe due to static_pointer_cast, 
+//a better version would use dynamic pointer cast and std::optional
+template<typename _DerivedRuleType>
+std::shared_ptr<RenameRule> CopyDerivedRenameRule(std::shared_ptr<RenameRule> RuleToCopy)
+{
+  auto CastedRule = std::static_pointer_cast<_DerivedRuleType>(RuleToCopy);
+  CastedRule      = std::make_shared<_DerivedRuleType>(*CastedRule);
+  return std::static_pointer_cast<RenameRule>(CastedRule);
+}
