@@ -110,10 +110,10 @@ constexpr bool is_one_of_v = is_one_of<T, ARGS...>::value;
 
 //Creates a copy of RuleToCopy by casting to a particular derived type first, not safe due to static_pointer_cast, 
 //a better version would use dynamic pointer cast and std::optional
-template<typename _DerivedRuleType>
-std::shared_ptr<RenameRule> CopyDerivedRenameRule(std::shared_ptr<RenameRule> RuleToCopy)
+template<typename _DerivedType, typename _BaseType>
+std::shared_ptr<_BaseType> CopyDerivedRenameRule(std::shared_ptr<_BaseType> RuleToCopy)
 {
-  auto CastedRule = std::static_pointer_cast<_DerivedRuleType>(RuleToCopy);
-  CastedRule      = std::make_shared<_DerivedRuleType>(*CastedRule);
-  return std::static_pointer_cast<RenameRule>(CastedRule);
+  auto CastedRule = std::static_pointer_cast<_DerivedType>(RuleToCopy);
+  CastedRule      = std::make_shared<_DerivedType>(*CastedRule);
+  return std::static_pointer_cast<_BaseType>(CastedRule);
 }
