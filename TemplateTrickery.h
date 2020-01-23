@@ -117,3 +117,30 @@ std::shared_ptr<_BaseType> CopyDerivedRenameRule(std::shared_ptr<_BaseType> Rule
   CastedRule      = std::make_shared<_DerivedType>(*CastedRule);
   return std::static_pointer_cast<_BaseType>(CastedRule);
 }
+
+//The following three templates check if _MemberPointerType is a valid type of member pointer for the class _ClassType
+template<typename _MemberPointerType, typename _ClassType>
+struct is_member_pointer_from_class : std::false_type
+{};
+
+template<typename T, typename _ClassType>
+struct is_member_pointer_from_class<T(_ClassType::*), _ClassType> : std::true_type
+{};
+
+template<typename _MemberPointerType, typename _ClassType>
+using is_member_pointer_from_class_v = is_member_pointer_from_class<_MemberPointerType, _ClassType>::value;
+
+//This class allows the first argument to be compared to the second argument if templated with the members to be compared
+template<auto... MemberPointers, typename _FirstType, typename _SecondType, typename = std::enable_if_t<std::is_same_v<_FirstType, _SecondType>>>
+bool compare(const _FirstType& FirstItem, const _SecondType& SecondItem)
+{
+   return std::tie((FirstItem.*MemberPointers)...) == std::tie((SecondItem.*MemberPointers)...);
+}
+
+//This class allows the second argument to be assigned to the first rgument with the templated member pointer being the members that are assigned
+template<auto... MemberPointers, typename _FirstType, typename _SecondType, typename = std::enable_if_t<std::is_same_v<_FirstType, _SecondType>>>
+_FirstType& assign(_FirstType& FirstItem, const _SecondType& SecondItem)
+{
+   std::tie((FirstItem.*MemberPointers)...) = std::tie((SecondItem.*MemberPointers)...);
+   return FirstItem;
+}
