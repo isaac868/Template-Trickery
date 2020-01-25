@@ -97,7 +97,7 @@ namespace TRAIT_TYPE_HELPERS
 	struct is_one_of_helper : std::false_type {};
 
 	template <typename T, typename ... ARGS>
-	struct is_one_of_helper <T, std::enable_if_t<(std::is_same_v<T, ARGS> || ...)>, ARGS...> : std::true_type {};
+	struct is_one_of_helper <T, std::enable_if_t<(std::is_same<T, ARGS>::value || ...)>, ARGS...> : std::true_type {};
 }
 
 //Main type trait
