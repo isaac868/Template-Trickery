@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include <tuple>
 
 #define MAKE_TYPE_TRAIT_HAS_STATIC_FUNCTION(TRAIT_NAME, FUNCTION_NAME)              \
 namespace TRAIT_TYPE_HELPERS                                                        \
@@ -132,4 +133,17 @@ _FirstType& assign_using_member_pointer(_FirstType& FirstItem, const _SecondType
 {
    std::tie((FirstItem.*MemberPointers)...) = std::tie((SecondItem.*MemberPointers)...);
    return FirstItem;
+}
+
+//This function will call the funciton func for each element in the passed tuple. THe funciton should be a generic lambda or
+//any other class with the () operator templated and overloaded.
+template<int Current = 0, typename... T, typename F>
+void tuple_for_each(std::tuple<T...>& tuple, F func)
+{
+    func(std::get<Current>(tuple));
+
+    if constexpr (Current + 1 < std::tuple_size<std::decay_t<decltype(tuple)>>::value)
+    {
+        tuple_for_each<Current + 1>(tuple, func);
+    }
 }
